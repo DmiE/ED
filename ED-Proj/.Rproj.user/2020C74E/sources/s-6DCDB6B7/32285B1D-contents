@@ -1,0 +1,43 @@
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("lubridate")
+
+# libraries 
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+raw <- read.csv("")
+summary(raw)
+
+weight <- raw.Weight
+
+# Waga sportowców danej dyscypliny
+waga_do_dyscypliny_raw <- data.frame(raw$Sport, raw$Weight, sex = raw$Sex) # utworzenie zmiennej - Dyscyplina - Waga - PLec
+waga_do_dyscypliny_bez_na <- waga_do_dyscypliny_raw %>% filter(!is.na(raw.Weight)) # utworzenie zmiennej - Dyscyplina - Waga - Plec bez NA
+
+summary(waga_do_dyscypliny_bez_na)
+
+waga_do_dyscypliny_bez_na %>% group_by(sport = raw.Sport, sex)  %>% summarise(weight = mean(raw.Weight)) -> waga_do_dyscypliny # Srednia waga do dyscypliny (osobno K i M)
+
+sorted <- waga_do_dyscypliny[order(waga_do_dyscypliny$weight), ] # waga_do_dyscypliny posortowana po wadze
+
+ggplot(data = waga_do_dyscypliny, aes(x = sport, y = weight, fill = sex)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+waga_do_dyscypliny_M <- waga_do_dyscypliny[(waga_do_dyscypliny$sex == "M"),]
+waga_do_dyscypliny_M_sorted <- waga_do_dyscypliny_M[order(waga_do_dyscypliny_M$weight), ]
+
+ggplot(data = waga_do_dyscypliny_M_sorted, aes(x = reorder(sport,-weight), y = weight)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+#Obliczenie BMI zawodnikow
+
+BMI_Dyscyplina <- data.frame(Sport = raw$Sport, BMI = (raw$Weight/(raw$Height/100)^2), Sex = raw$Sex) # Dyscyplina - BMI - Plec
+BMI_Dyscyplina_bez_NA <- BMI_Dyscyplina %>% filter(!is.na(BMI)) # Dyscyplina - BMI - Plec -- Bez NA
+BMI_Dyscyplina_filtered <- BMI_Dyscyplina_bez_NA %>% filter(BMI>=12 & BMI<= 42) # Wartosci BMI ponizej 12(mega skrajna niedowaga) i powyzej 42(mega skrajna otylosc) usuniete
+
+BMI_Dyscyplina_filtered %>% group_by(Sport, Sex)  %>% summarise(BMI_MEAN = mean(BMI)) -> Srednie_BMI_do_Sportu
+ggplot(data = BMI_Dyscyplina_filtered, aes(x = Sport, y = BMI, fill = Sex)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+summary(BMI_Dyscyplina_filtered)
+

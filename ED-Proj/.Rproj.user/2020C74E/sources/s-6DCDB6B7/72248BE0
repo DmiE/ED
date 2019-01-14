@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1547505910451.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "72248BE0",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1547505910451,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "F5E39908",
+        "caption" : "BMI_Dyscyplina_Medal_Plec_bez_NA",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=BMI_Dyscyplina_Medal_Plec_bez_NA&cache_key=F5E39908",
+        "displayedObservations" : 30196,
+        "environment" : "",
+        "object" : "BMI_Dyscyplina_Medal_Plec_bez_NA",
+        "preview" : 0,
+        "totalObservations" : 30196,
+        "variables" : 4
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

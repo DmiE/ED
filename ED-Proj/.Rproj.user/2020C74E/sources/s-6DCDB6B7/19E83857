@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1547506595723.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "19E83857",
+    "lastKnownWriteTime" : 208228768,
+    "last_content_update" : 1547506595723,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "318BCC34",
+        "caption" : "BMI_Dla_Sportu_i_Plci",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=BMI_Dla_Sportu_i_Plci&cache_key=318BCC34",
+        "displayedObservations" : "669",
+        "environment" : "",
+        "object" : "BMI_Dla_Sportu_i_Plci",
+        "preview" : "0",
+        "totalObservations" : "669",
+        "variables" : "4"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
