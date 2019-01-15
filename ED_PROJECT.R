@@ -52,13 +52,38 @@ summary(BMI_Dyscyplina_filtered)
 
 # BMI DO ZDOBYTYCH MEDALI W DANEJ DYSCYPLINIE
 
-BMI_Dyscyplina_Medal_Plec <- data.frame(Sport = raw$Sport, BMI = round((raw$Weight/(raw$Height/100)^2), digits = 1), Sex = raw$Sex, Medal = raw$Medal) # Dyscyplina - BMI - Plec - Medal
+BMI_Dyscyplina_Medal_Plec <- data.frame(Sport = raw$Sport, BMI = round((raw$Weight/(raw$Height/100)^2), digits = 0), Sex = raw$Sex, Medal = raw$Medal) # Dyscyplina - BMI - Plec - Medal
 BMI_Dyscyplina_Medal_Plec_bez_NA <- BMI_Dyscyplina_Medal_Plec %>% filter((!is.na(BMI)) & (!is.na(Medal))) # Dyscyplina - BMI - Plec -- Bez NA
 
-BMI_Dla_Sportu_i_Plci <- BMI_Dyscyplina_Medal_Plec_bez_NA[(BMI_Dyscyplina_Medal_Plec_bez_NA$Sex == "M") & (BMI_Dyscyplina_Medal_Plec_bez_NA$Sport == "Cycling"),]
+BMI_Dla_Sportu_i_Plci <- BMI_Dyscyplina_Medal_Plec_bez_NA[(BMI_Dyscyplina_Medal_Plec_bez_NA$Sex == "F") & (BMI_Dyscyplina_Medal_Plec_bez_NA$Sport == "Cycling"),]
 # suma medali danego typu dla danego BMI
 
-ggplot(data = BMI_Dla_Sportu_i_Plci, aes(x = BMI, y = Medal, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+Medale_dla_BMI <- BMI_Dla_Sportu_i_Plci %>% count(BMI, Medal, sort = TRUE) #zliczenie medali danego typu dla poszczegolnych BMI
 
-summary(BMI_Dyscyplina_Medal_Plec_bez_NA)
+ggplot(data = Medale_dla_BMI, aes(x = BMI, y = n, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+# KRAJ DO LICZBY MEDALI
+
+Dyscyplina_Medal_Kraj_Plec <- data.frame(Sport = raw$Sport, Sex = raw$Sex, Country = raw$Team, Medal = raw$Medal) # Dyscyplina - Kraj - Plec - Medal
+Kraj_Dyscyplina_Medal_Plec_bez_NA <- Dyscyplina_Medal_Kraj_Plec %>% filter((!is.na(Country)) & (!is.na(Medal)) & (!is.na(Sport))) # Dyscyplina - BMI - Plec -- Bez NA
+
+Medale_Dla_Sport_Plec <- Kraj_Dyscyplina_Medal_Plec_bez_NA[(Kraj_Dyscyplina_Medal_Plec_bez_NA$Sex == "F") & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Sport == "Cycling"),]
+Medale_Dla_Kraj <- Medale_Dla_Sport_Plec %>% count(Country, Medal, sort = TRUE)
+
+summary (Medale_Dla_Kraj)
+
+ggplot(data = Medale_Dla_Kraj, aes(x = Country, y = n, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# PARAMETRY ZAWODNIKOW DANEJ DYSCYPLINY W ZALEZNOSCI OD LAT
+
+Wiek_Waga_Wzrost_PrzezLata <- data.frame(Sport = raw$Sport, Sex = raw$Sex, Height = raw$Height, Weight = raw$Weight, Age = raw$Age, Year = raw$Year) # Parametry zawodnikow na przestrzeni lat
+Wiek_Waga_Wzrost_PrzezLata_bez_NA <- Wiek_Waga_Wzrost_PrzezLata %>% filter((!is.na(Sport)) & (!is.na(Weight)) & (!is.na(Age)) & (!is.na(Height) & (!is.na(Year)))) # Dyscyplina - BMI - Plec -- Bez NA
+Wiek_Waga_Wzrost_PrzezLata_filtered <- Wiek_Waga_Wzrost_PrzezLata_bez_NA %>% filter((Weight >= 35 & Age >= 18) | (Weight <= 160 & Age < 18))
+Wiek_Waga_Wzrost_PrzezLata_filtered <- Wiek_Waga_Wzrost_PrzezLata_filtered[(Wiek_Waga_Wzrost_PrzezLata_filtered$Sex == "F") & (Wiek_Waga_Wzrost_PrzezLata_filtered$Sport == "Cycling"),]
+PrzezLata <- aggregate(Wiek_Waga_Wzrost_PrzezLata_filtered[,3:5], list(Wiek_Waga_Wzrost_PrzezLata_filtered$Year), mean)
+
+ggplot(data = PrzezLata, aes(x = Group.1, y = Age)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggplot(data = PrzezLata, aes(x = Group.1, y = Height)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggplot(data = PrzezLata, aes(x = Group.1, y = Weight)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+summary(Wiek_Waga_Wzrost_PrzezLata_bez_NA)
