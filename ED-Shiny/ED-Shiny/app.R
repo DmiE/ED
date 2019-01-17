@@ -6,10 +6,13 @@
 #
 #    http://shiny.rstudio.com/
 #
+install.packages("rworldmap")
+
 library(ggplot2)
 library(dplyr)
 library(lubridate)
 library(shiny)
+library(rworldmap)
 
 raw <- read.csv("athlete_events.csv")
 
@@ -93,7 +96,8 @@ ui <- navbarPage("120 years of Olimpic history",
                                                                                 "Curling", "Cycling", "Diving", "Equestrianism", "Fencing", "Figure Skating", "Football", "Freestyle Skiing", "Golf", "Gymnastics", "Handball", "Hockey", "Ice Hockey", "Judo", "Lacrosse", "Luge",
                                                                                 "Modern Pentathlon", "Motorboating", "Nordic Combined", "Rhythmic Gymnastics", "Rowing", "Rugby", "Rugby Sevens", "Sailing", "Shooting", "Short Track Speed Skating", "Skeleton", "Ski Jumping", "Snowboarding", "Softball", "Speed Skating", "Swimming",
                                                                                 "Synchronized Swimming", "Table Tennis", "Taekwondo", "Tennis", "Trampolining", "Triathlon", "Tug-Of-War", "Volleyball", "Water Polo", "Weightlifting", "Wrestling")),
-                          selectInput("Tab4_Sex", "Choose sex:",choices = c("M", "F"))
+                          selectInput("Tab4_Sex", "Choose sex:",choices = c("M", "F")),
+                          selectInput("Tab4_Medal", "Choose medal", choices = c("Gold", "Silver", "Bronze"))
                         ),
                         
                         # Show a plot of the generated distribution
@@ -176,9 +180,16 @@ server <- function(input, output) {
       Dyscyplina_Medal_Kraj_Plec <- data.frame(Sport = raw$Sport, Sex = raw$Sex, Country = raw$Team, Medal = raw$Medal) # Dyscyplina - Kraj - Plec - Medal
       Kraj_Dyscyplina_Medal_Plec_bez_NA <- Dyscyplina_Medal_Kraj_Plec %>% filter((!is.na(Country)) & (!is.na(Medal)) & (!is.na(Sport))) # Dyscyplina - BMI - Plec -- Bez NA
       
-      Medale_Dla_Sport_Plec <- Kraj_Dyscyplina_Medal_Plec_bez_NA[(Kraj_Dyscyplina_Medal_Plec_bez_NA$Sex == input$Tab4_Sex) & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Sport == input$Tab4_Sport),]
-      Medale_Dla_Kraj <- Medale_Dla_Sport_Plec %>% count(Country, Medal, sort = TRUE)
-
+      #Medale_Dla_Sport_Plec <- Kraj_Dyscyplina_Medal_Plec_bez_NA[(Kraj_Dyscyplina_Medal_Plec_bez_NA$Sex == input$Tab4_Sex) & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Sport == input$Tab4_Sport),]'
+      Medale_Dla_Sport_Plec <- Kraj_Dyscyplina_Medal_Plec_bez_NA[(Kraj_Dyscyplina_Medal_Plec_bez_NA$Sex == input$Tab4_Sex) & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Sport == input$Tab4_Sport) & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Medal == input$Tab4_Medal),]
+      #Medale_Dla_Sport_Plec <- Kraj_Dyscyplina_Medal_Plec_bez_NA[(Kraj_Dyscyplina_Medal_Plec_bez_NA$Sex == "F") & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Sport == "Cycling") & (Kraj_Dyscyplina_Medal_Plec_bez_NA$Medal == "Gold"),]
+      Kraje_do_Mapy <- as.data.frame(Medale_Dla_Sport_Plec$Country)
+      #Medale_Dla_Kraj <- Medale_Dla_Sport_Plec %>% count(Country, Medal, sort = TRUE) # tego trzeba uzyc jesli wyswietlamy wszyskie medale
+      Kraje_Count <- Kraje_do_Mapy %>% count(Country=Medale_Dla_Sport_Plec$Country, sort = TRUE) # zliczamy ilosc wystapienia danego kraju
+      colnames(Kraje_Count) <- c("country", "value")
+      matched <- joinCountryData2Map(Kraje_Count, joinCode = "NAME", nameJoinColumn = "country")
+      
+      mapCountryData(matched, nameColumnToPlot = "value", mapTitle = "Medals", catMethod = "pretty", colourPalette = "heat")
       ggplot(data = Medale_Dla_Kraj, aes(x = Country, y = n, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
       
     })
@@ -190,9 +201,9 @@ server <- function(input, output) {
       Wiek_Waga_Wzrost_PrzezLata_bez_NA <- Wiek_Waga_Wzrost_PrzezLata %>% filter((!is.na(Sport)) & (!is.na(Weight)) & (!is.na(Age)) & (!is.na(Height) & (!is.na(Year)))) # Dyscyplina - BMI - Plec -- Bez NA
       Wiek_Waga_Wzrost_PrzezLata_filtered <- Wiek_Waga_Wzrost_PrzezLata_bez_NA %>% filter((Weight >= 35 & Age >= 18) | (Weight <= 160 & Age < 18))
       Wiek_Waga_Wzrost_PrzezLata_selected <- Wiek_Waga_Wzrost_PrzezLata_filtered[(Wiek_Waga_Wzrost_PrzezLata_filtered$Sex == input$Tab5_Sex) & (Wiek_Waga_Wzrost_PrzezLata_filtered$Sport == input$Tab5_Sport),]
-      PrzezLata <- aggregate(Wiek_Waga_Wzrost_PrzezLata_selected[,3:5], list(Wiek_Waga_Wzrost_PrzezLata_selected$Year), mean)
+      PrzezLata <- aggregate(Wiek_Waga_Wzrost_PrzezLata_selected[,3], list(Wiek_Waga_Wzrost_PrzezLata_selected$Year), mean)
       
-      ggplot(data = PrzezLata, aes(x = Group.1, y = as.list(input$Tab5_Characteristic))) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      ggplot(data = PrzezLata, aes(x = Group.1, y = PrzezLata[,2])) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
       
     })
 }
