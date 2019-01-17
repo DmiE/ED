@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-install.packages("rworldmap")
+#install.packages("rworldmap")
 
 library(ggplot2)
 library(dplyr)
@@ -106,32 +106,32 @@ ui <- navbarPage("120 years of Olimpic history",
                         )
                       )
                     )
-                ),
-          tabPanel("Over The Years",
+                )
+          #tabPanel("Over The Years",
            
-           fluidPage(
+           #fluidPage(
              
              # Application title
-             titlePanel("Over The Years"),
+            # titlePanel("Over The Years"),
              
              # Sidebar with a slider input for number of bins 
-             sidebarLayout(
-               sidebarPanel(
-                 selectInput("Tab5_Sport", "Choose sport", choices = c("Alpine Skiing", "Archery", "Art Competitions", "Athletics", "Badminton", "Baseball", "Basketball", "Beach Volleyball", "Biathlon", "Bobsleigh", "Boxing", "Canoeing", "Cross Country Skiing",
-                                                                       "Curling", "Cycling", "Diving", "Equestrianism", "Fencing", "Figure Skating", "Football", "Freestyle Skiing", "Golf", "Gymnastics", "Handball", "Hockey", "Ice Hockey", "Judo", "Lacrosse", "Luge",
-                                                                       "Modern Pentathlon", "Motorboating", "Nordic Combined", "Rhythmic Gymnastics", "Rowing", "Rugby", "Rugby Sevens", "Sailing", "Shooting", "Short Track Speed Skating", "Skeleton", "Ski Jumping", "Snowboarding", "Softball", "Speed Skating", "Swimming",
-                                                                       "Synchronized Swimming", "Table Tennis", "Taekwondo", "Tennis", "Trampolining", "Triathlon", "Tug-Of-War", "Volleyball", "Water Polo", "Weightlifting", "Wrestling")),
-                 selectInput("Tab5_Sex", "Choose sex:",choices = c("M", "F")),
-                 selectInput("Tab5_Characteristic", "Choose sex:",choices = c("Age", "Height", "Weight"))
-               ),
+             #sidebarLayout(
+              # sidebarPanel(
+               #  selectInput("Tab5_Sport", "Choose sport", choices = c("Alpine Skiing", "Archery", "Art Competitions", "Athletics", "Badminton", "Baseball", "Basketball", "Beach Volleyball", "Biathlon", "Bobsleigh", "Boxing", "Canoeing", "Cross Country Skiing",
+                                                                       #"Curling", "Cycling", "Diving", "Equestrianism", "Fencing", "Figure Skating", "Football", "Freestyle Skiing", "Golf", "Gymnastics", "Handball", "Hockey", "Ice Hockey", "Judo", "Lacrosse", "Luge",
+                                                                       #"Modern Pentathlon", "Motorboating", "Nordic Combined", "Rhythmic Gymnastics", "Rowing", "Rugby", "Rugby Sevens", "Sailing", "Shooting", "Short Track Speed Skating", "Skeleton", "Ski Jumping", "Snowboarding", "Softball", "Speed Skating", "Swimming",
+                                                                       #"Synchronized Swimming", "Table Tennis", "Taekwondo", "Tennis", "Trampolining", "Triathlon", "Tug-Of-War", "Volleyball", "Water Polo", "Weightlifting", "Wrestling")),
+                # selectInput("Tab5_Sex", "Choose sex:",choices = c("M", "F")),
+                 #selectInput("Tab5_Characteristic", "Choose sex:",choices = c("Age", "Height", "Weight"))
+               #),
                
                # Show a plot of the generated distribution
-               mainPanel(
-                 plotOutput("Tab5_OverTheYears")
-               )
-             )
-           )
-  )
+               #mainPanel(
+                # plotOutput("Tab5_OverTheYears")
+               #)
+            # )
+           #)
+  #)
 )
 
 # Define server logic required to draw a histogram
@@ -190,23 +190,26 @@ server <- function(input, output) {
       matched <- joinCountryData2Map(Kraje_Count, joinCode = "NAME", nameJoinColumn = "country")
       
       mapCountryData(matched, nameColumnToPlot = "value", mapTitle = "Medals", catMethod = "pretty", colourPalette = "heat")
-      ggplot(data = Medale_Dla_Kraj, aes(x = Country, y = n, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      #ggplot(data = Medale_Dla_Kraj, aes(x = Country, y = n, fill = Medal)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
       
     })
     
-    output$Tab5_OverTheYears <- renderPlot({
+    #output$Tab5_OverTheYears <- renderPlot({
       # PARAMETRY ZAWODNIKOW DANEJ DYSCYPLINY W ZALEZNOSCI OD LAT
       
-      Wiek_Waga_Wzrost_PrzezLata <- data.frame(Sport = raw$Sport, Sex = raw$Sex, Height = raw$Height, Weight = raw$Weight, Age = raw$Age, Year = raw$Year) # Parametry zawodnikow na przestrzeni lat
-      Wiek_Waga_Wzrost_PrzezLata_bez_NA <- Wiek_Waga_Wzrost_PrzezLata %>% filter((!is.na(Sport)) & (!is.na(Weight)) & (!is.na(Age)) & (!is.na(Height) & (!is.na(Year)))) # Dyscyplina - BMI - Plec -- Bez NA
-      Wiek_Waga_Wzrost_PrzezLata_filtered <- Wiek_Waga_Wzrost_PrzezLata_bez_NA %>% filter((Weight >= 35 & Age >= 18) | (Weight <= 160 & Age < 18))
-      Wiek_Waga_Wzrost_PrzezLata_selected <- Wiek_Waga_Wzrost_PrzezLata_filtered[(Wiek_Waga_Wzrost_PrzezLata_filtered$Sex == input$Tab5_Sex) & (Wiek_Waga_Wzrost_PrzezLata_filtered$Sport == input$Tab5_Sport),]
-      PrzezLata <- aggregate(Wiek_Waga_Wzrost_PrzezLata_selected[,3], list(Wiek_Waga_Wzrost_PrzezLata_selected$Year), mean)
+     # Wiek_Waga_Wzrost_PrzezLata <- data.frame(Sport = raw$Sport, Sex = raw$Sex, Height = raw$Height, Weight = raw$Weight, Age = raw$Age, Year = raw$Year) # Parametry zawodnikow na przestrzeni lat
+    #  Wiek_Waga_Wzrost_PrzezLata_bez_NA <- Wiek_Waga_Wzrost_PrzezLata %>% filter((!is.na(Sport)) & (!is.na(Weight)) & (!is.na(Age)) & (!is.na(Height) & (!is.na(Year)))) # Dyscyplina - BMI - Plec -- Bez NA
+     # Wiek_Waga_Wzrost_PrzezLata_filtered <- Wiek_Waga_Wzrost_PrzezLata_bez_NA %>% filter((Weight >= 35 & Age >= 18) | (Weight <= 160 & Age < 18))
+    #  Wiek_Waga_Wzrost_PrzezLata_selected <- Wiek_Waga_Wzrost_PrzezLata_filtered[(Wiek_Waga_Wzrost_PrzezLata_filtered$Sex == input$Tab5_Sex) & (Wiek_Waga_Wzrost_PrzezLata_filtered$Sport == input$Tab5_Sport),]
+     # PrzezLata <- aggregate(Wiek_Waga_Wzrost_PrzezLata_selected[,3], list(Wiek_Waga_Wzrost_PrzezLata_selected$Year), mean)
       
-      ggplot(data = PrzezLata, aes(x = Group.1, y = PrzezLata[,2])) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+      #ggplot(data = PrzezLata, aes(x = Group.1, y = PrzezLata$input$Tab5_Characteristic)) + geom_bar(stat="identity", position=position_dodge()) + theme(axis.text.x = element_text(angle = 90, hjust = 1))
       
-    })
+    #})
 }
+
+# TODO - jesli nie ma elementow poszukiwanych to zeby wyrzucilo cos fajnego
+# TODO - KOLORKI WYKRESOW
 
 # Run the application 
 shinyApp(ui = ui, server = server)
